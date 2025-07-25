@@ -7,7 +7,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
 # Blogger settings
-BLOG_ID = '6163356225543131048'  # Your Blog ID
+BLOG_ID = 'your blog_id'  # Your Blog ID
 
 # Auth scopes
 SCOPES = ['https://www.googleapis.com/auth/blogger']
@@ -20,7 +20,7 @@ def get_blogger_service():
             creds = pickle.load(token)
     else:
         flow = InstalledAppFlow.from_client_secrets_file(
-            'client_secret_111450040636-gtcpuoncpfcf8lre8dgsg7aki79k0h9f.apps.googleusercontent.com.json', SCOPES)
+            "' your client_secret.json file here'", SCOPES)
         creds = flow.run_local_server(port=0)
         with open('token.pkl', 'wb') as token:
             pickle.dump(creds, token)
@@ -74,7 +74,7 @@ def get_trending_topic(max_retries=10):
 import google.generativeai as genai
 
 # Set the NEW Gemini API key
-genai.configure(api_key="AIzaSyCyxwR6QEX9X7AM-nL61htQJWEGp7bMT9k")
+genai.configure(api_key="your gemini api_key here")
 
 def generate_blog_post(topic):
     print("🤖 Generating blog post using Gemini Pro...")
