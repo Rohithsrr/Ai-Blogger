@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
+
 from googleapiclient.discovery import build
 
 # Blogger settings
@@ -76,8 +77,8 @@ def get_trending_topic(max_retries=10):
 # Generate post content using Gemini via HuggingFace endpoint (free)
 import google.generativeai as genai
 
-# Set the NEW Gemini API key
-genai.configure(api_key="your gemini api_key here")
+# Set the NEW Gemini API key from environment variables
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 
 def generate_blog_post(topic):
     print("🤖 Generating blog post using Gemini Pro...")
@@ -134,4 +135,3 @@ if __name__ == '__main__':
         save_used_topic(topic)
     except Exception as e:
         print(f"❌ Error: {e}")
-        
