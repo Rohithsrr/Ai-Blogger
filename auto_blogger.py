@@ -1,9 +1,10 @@
 import os
-import pickle
 import requests
 import datetime
 from bs4 import BeautifulSoup
 from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
 # Blogger settings
@@ -15,15 +16,15 @@ SCOPES = ['https://www.googleapis.com/auth/blogger']
 # Load or create credentials
 def get_blogger_service():
     creds = None
-    if os.path.exists('token.pkl'):
-        # Security hardening: Avoid insecure pickle deserialization (CWE-502)
-        if os.path.exists('token.json'):
-            from google.oauth2.credentials import Credentials
-            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    else:
-        flow = InstalledAppFlow.from_client_secrets_file(
-            "' your client_secret.json file here'", SCOPES)
-        creds = flow.run_local_server(port=0)
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                "' your client_secret.json file here'", SCOPES)
+            creds = flow.run_local_server(port=0)
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
     return build('blogger', 'v3', credentials=creds)
@@ -134,4 +135,3 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"❌ Error: {e}")
         
-
