@@ -16,14 +16,16 @@ SCOPES = ['https://www.googleapis.com/auth/blogger']
 def get_blogger_service():
     creds = None
     if os.path.exists('token.pkl'):
-        with open('token.pkl', 'rb') as token:
-            creds = pickle.load(token)
+        # Security hardening: Avoid insecure pickle deserialization (CWE-502)
+        if os.path.exists('token.json'):
+            from google.oauth2.credentials import Credentials
+            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     else:
         flow = InstalledAppFlow.from_client_secrets_file(
             "' your client_secret.json file here'", SCOPES)
         creds = flow.run_local_server(port=0)
-        with open('token.pkl', 'wb') as token:
-            pickle.dump(creds, token)
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
     return build('blogger', 'v3', credentials=creds)
 
 # Scrape trending topic from Google Trends (with error handling)
